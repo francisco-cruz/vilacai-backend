@@ -1,25 +1,36 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 import { Recheio } from '@prisma/client'
+import { AppError } from '../../../../errors/appError';
 import { UpdateRecheioDTO } from '../../dtos/UpdateRecheioDTO';
 
 
 export class UpdateRecheioCase {
-  async execute({ id, name, section }: UpdateRecheioDTO): Promise<Recheio> {
+  async execute({ id, name, section, qntd_recheio }: UpdateRecheioDTO): Promise<Recheio> {
+    // Verificar se o produto existe
+    const recheioAlreadyExists = await prisma.produto.findUnique({
+      where: {
+        id
+      }
+    })
 
+    if (!recheioAlreadyExists) {
+      throw new AppError("Produto does not exists!")
+    }
 
-    const recheio = await prisma.recheio.update({
+    const updatedRecheio = await prisma.recheio.update({
       where: {
         id
       },
       data: {
         name,
-        section
+        section,
+        qntd_recheio
       }
-    
+
     })
 
-    return recheio
+    return updatedRecheio
 
   }
 }

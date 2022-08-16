@@ -3,18 +3,18 @@ import { UpdateRecheioCase } from "./UpdateRecheioCase";
 
 export class UpdateRecheioController {
   async handle(req: Request, res: Response) {
-    const { id, name, section } = req.body
+    const { id, name, section, qntd_recheio } = req.body
 
     const updateRecheioCase = new UpdateRecheioCase()
 
-
-    const updatedProduto = await updateRecheioCase.execute({
+    const updatedRecheio = await updateRecheioCase.execute({
       id,
       name,
       section,
+      qntd_recheio
     })
 
-    return res.status(201).json(updatedProduto)
+    return res.status(201).json(updatedRecheio)
   }
 
 }

@@ -1,10 +1,3 @@
-/*
-  Warnings:
-
-  - Added the required column `img` to the `produtos` table without a default value. This is not possible if the table is not empty.
-
-*/
--- RedefineTables
 PRAGMA foreign_keys=OFF;
 CREATE TABLE "new_produtos" (
     "id" TEXT NOT NULL PRIMARY KEY,

@@ -7,42 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model SecaoProduto {
+  id String @id @default(uuid())
+  name String
+  possuiAdicionais Boolean
+
+  produtos Produto[] @relation("produtos")
+
+  @@map("secoes_produto")
+}
+
+model SecaoRecheio {
+  id String @id @default(uuid())
+  name String
+  recheios Recheio[] @relation("recheios")
+
+  @@map("secoes_recheios")
+}
+
 model Produto {
   id String @id @default(uuid())
   name String @unique
-  section String
   obs String
   img String
   price Float
-  qntd Int
-  qntd_additional Int
+  qntd_max_adicionais Int
 
   created_at DateTime @default(now())
   update_at DateTime @updatedAt
 
-  pedido Pedido[] @relation("produto")
+ 
+  idSecao String
+  secao SecaoProduto @relation("produtos", fields: [idSecao], references: [id])
 
   @@map("produtos")
-
 }
 
 model Recheio {
   id String @id @default(uuid())
   name String @unique
-  section String
+  qntd_recheio Int
 
-  pedido Pedido[] @relation("recheio")
+  idSecao String
+  secao SecaoRecheio @relation("recheios", fields: [idSecao], references: [id])
 
   @@map("recheios")
-
-}
-
-model Pedido {
-  produto Produto @relation("produto", fields: [idProduto], references: [id])
-  idProduto String
-  recheio Recheio @relation("recheio", fields: [idRecheio], references: [id])
-  idRecheio String
-
-  @@id([idProduto, idRecheio])
-  @@map("pedidos")
 }
