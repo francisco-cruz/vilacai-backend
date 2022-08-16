@@ -1,11 +1,11 @@
-import { Response, Request } from "express";
+import { Produto } from "@prisma/client";
+import { DeleteProdutoDTO } from "../../dtos/DeleteProdutoDTO";
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 export class DeleteProdutoCase {
-  async execute(req: Request, res: Response) {
-    const {id} = req.body;
+  async execute({ id }: DeleteProdutoDTO): Promise<Produto> {
 
     const deleteProduto = await prisma.produto.delete({
       where: {
@@ -13,7 +13,7 @@ export class DeleteProdutoCase {
       },
     })
 
-    return res.json(deleteProduto)
+    return deleteProduto
 
-}
+  }
 }

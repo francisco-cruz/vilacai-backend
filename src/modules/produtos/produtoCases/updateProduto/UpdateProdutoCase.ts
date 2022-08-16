@@ -1,4 +1,5 @@
-import { Response, Request } from "express";
+import { Produto } from "@prisma/client";
+import { UpdateProdutoDTO } from "../../dtos/UpdateProdutoDTO"
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -6,10 +7,9 @@ const prisma = new PrismaClient();
 
 
 export class UpdateProdutoCase {
-  async execute(req: Request, res: Response) {
-    
-    const {id ,name, section, obs, img, price, qntd, qntd_additional} = req.body;
-  
+  async execute({ id, name, section, obs, img, price, qntd, qntd_additional }: UpdateProdutoDTO): Promise<Produto> {
+
+
     const updatedProduto = await prisma.produto.update({
       where: {
         id
@@ -26,7 +26,7 @@ export class UpdateProdutoCase {
       }
 
     })
-    
-    return res.json(updatedProduto)
+
+    return updatedProduto
   }
 }
