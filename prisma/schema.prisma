@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Produto {
+  id String @id @default(uuid())
+  name String @unique
+  section String
+  obs String
+  img String
+  price Float
+  qntd Int
+  qntd_additional Int
+
+  created_at DateTime @default(now())
+  update_at DateTime @updatedAt
+
+  pedido Pedido[] @relation("produto")
+
+  @@map("produtos")
+
+}
+
+model Recheio {
+  id String @id @default(uuid())
+  name String @unique
+  section String
+
+  pedido Pedido[] @relation("recheio")
+
+  @@map("recheios")
+
+}
+
+model Pedido {
+  produto Produto @relation("produto", fields: [idProduto], references: [id])
+  idProduto String
+  recheio Recheio @relation("recheio", fields: [idRecheio], references: [id])
+  idRecheio String
+
+  @@id([idProduto, idRecheio])
+  @@map("pedidos")
+}
