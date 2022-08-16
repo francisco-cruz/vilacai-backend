@@ -5,9 +5,9 @@ export class DeleteProdutoController {
   async handle(req: Request, res: Response) {
     const { id } = req.body
 
-    const updateProdutoCase = new DeleteProdutoCase()
+    const deleteProdutoCase = new DeleteProdutoCase()
 
-    const deletedProduto = await updateProdutoCase.execute({id})
+    const deletedProduto = await deleteProdutoCase.execute({id})
 
     return res.status(201).json(deletedProduto)
   }
