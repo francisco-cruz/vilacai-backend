@@ -1,24 +1,14 @@
+import { Response, Request } from "express";
+
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-import { Produto } from '@prisma/client'
-import { ReadProdutoDTO } from "../../dtos/ReadProdutoDTO"
 
 export class ReadProdutoCase {
-  async execute({ name, section, obs, img, price, qntd, qntd_additional }: ReadProdutoDTO): Promise<Produto> {
+  async execute(req: Request, res: Response) {
     // Ver produtos
-    const produto = await prisma.produto.findMany({
-      data: {
-        name,
-        section,
-        obs,
-        img,
-        price,
-        qntd,
-        qntd_additional
-      }
-    })
+    const produtos = await prisma.produto.findMany()
 
-    return produto
+    return res.json(produtos)
 
   }
 }
