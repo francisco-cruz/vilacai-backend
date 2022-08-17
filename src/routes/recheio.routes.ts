@@ -8,6 +8,8 @@ const createRecheioController = new CreateRecheioController()
 const readRecheioCase = new ReadRecheioCase()
 const updateRecheioController = new UpdateRecheioController()
 const deleteRecheioControlleer = new DeleteRecheioController()
+
+
 const recheioRoutes = Router()
 
 recheioRoutes.post("/", createRecheioController.handle)
