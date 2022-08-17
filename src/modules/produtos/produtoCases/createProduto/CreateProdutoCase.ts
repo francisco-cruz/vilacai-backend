@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 import { Produto } from '@prisma/client'
@@ -7,11 +7,11 @@ import { CreateProdutoDTO } from "../../dtos/CreateProdutoDTO"
 
 
 export class CreateProdutoCase {
-  async execute({ name, obs, img, price, qntd, qntd_max_adicionais }: CreateProdutoDTO): Promise<Produto> {
+  async execute({id, name, obs, img, price, qntd_max_adicionais, id_secao }: CreateProdutoDTO): Promise<Produto> {
     // Verificar se o produto existe
     const produtoAlreadyExists = await prisma.produto.findUnique({
       where: {
-        name
+        id
       }
     })
 
@@ -26,11 +26,16 @@ export class CreateProdutoCase {
         obs,
         img,
         price,
-        qntd,
-        qntd_max_adicionais
+        qntd_max_adicionais,
+        secao: {
+          connect: {
+            id: id_secao 
+          }
+          
+        }
       }
     })
-
+ 
     return produto
 
   }

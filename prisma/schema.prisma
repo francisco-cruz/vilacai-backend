@@ -37,8 +37,9 @@ model Produto {
   update_at DateTime @updatedAt
 
  
-  idSecao String
-  secao SecaoProduto @relation("produtos", fields: [idSecao], references: [id])
+  secao SecaoProduto @relation("produtos", fields: [id_secao], references: [id])
+  id_secao String
+
 
   @@map("produtos")
 }
@@ -48,8 +49,8 @@ model Recheio {
   name String @unique
   qntd_recheio Int
 
-  idSecao String
-  secao SecaoRecheio @relation("recheios", fields: [idSecao], references: [id])
+  id_secao String
+  secao SecaoRecheio @relation("recheios", fields: [id_secao], references: [id])
 
   @@map("recheios")
 }
