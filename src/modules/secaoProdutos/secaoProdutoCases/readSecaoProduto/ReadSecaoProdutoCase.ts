@@ -5,10 +5,9 @@ const prisma = new PrismaClient();
 
 export class ReadSecaoProdutoCase {
   async execute(req: Request, res: Response) {
-    // Ver recheios
+    // Ver secão dos produtos
     const secoesProduto = await prisma.secaoProduto.findMany()
 
-    return res.json(secoesProduto)
-
+    return res.json(secoesProduto);
   }
 }

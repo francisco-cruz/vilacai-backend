@@ -1,4 +1,4 @@
 export interface SecaoProdutoDTO {
-  name: string,
-  possuiAdicionais: boolean
+  name: string;
+  possuiAdicionais: boolean;
 }
