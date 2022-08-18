@@ -3,10 +3,11 @@ import 'express-async-errors'
 import { AppError } from './errors/appError';
 const express = require("express");
 import { routes } from "./routes"
-
+import cors from 'cors' 
 const app = express()
 
 app.use(express.json())
+app.use(cors({ origin: '*' }))
 
 app.use(routes)
 

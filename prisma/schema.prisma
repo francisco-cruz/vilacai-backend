@@ -8,8 +8,8 @@ datasource db {
 }
 
 model SecaoProduto {
-  id String @id @default(uuid())
-  name String @unique
+  id               String  @id @default(uuid())
+  name             String  @unique
   possuiAdicionais Boolean
 
   produtos Produto[] @relation("produtos")
@@ -18,39 +18,37 @@ model SecaoProduto {
 }
 
 model SecaoRecheio {
-  id String @id @default(uuid())
-  name String @unique
+  id       String    @id @default(uuid())
+  name     String    @unique
   recheios Recheio[] @relation("recheios")
 
   @@map("secoes_recheios")
 }
 
 model Produto {
-  id String @id @default(uuid())
-  name String @unique
-  obs String
-  img String
-  price Float
+  id                  String @id @default(uuid())
+  name                String
+  obs                 String
+  img                 String
+  price               Float
   qntd_max_adicionais Int
 
   created_at DateTime @default(now())
-  update_at DateTime @updatedAt
+  update_at  DateTime @updatedAt
 
- 
-  secao SecaoProduto @relation("produtos", fields: [id_secao], references: [id])
+  secao    SecaoProduto @relation("produtos", fields: [id_secao], references: [id])
   id_secao String
-
 
   @@map("produtos")
 }
 
 model Recheio {
-  id String @id @default(uuid())
-  name String @unique
+  id           String @id @default(uuid())
+  name         String @unique
   qntd_recheio Int
 
   id_secao String
-  secao SecaoRecheio @relation("recheios", fields: [id_secao], references: [id])
+  secao    SecaoRecheio @relation("recheios", fields: [id_secao], references: [id])
 
   @@map("recheios")
 }

@@ -1,22 +1,30 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-import { Produto } from '@prisma/client'
-import { AppError } from '../../../../errors/appError';
-import { CreateProdutoDTO } from "../../dtos/CreateProdutoDTO"
-
+import { Produto, SecaoProduto } from "@prisma/client";
+import { AppError } from "../../../../errors/appError";
+import { CreateProdutoDTO } from "../../dtos/CreateProdutoDTO";
 
 export class CreateProdutoCase {
-  async execute({id, name, obs, img, price, qntd_max_adicionais, id_secao }: CreateProdutoDTO): Promise<Produto> {
-    // Verificar se o produto existe
-    const produtoAlreadyExists = await prisma.produto.findUnique({
+  async execute({
+    name,
+    obs,
+    img,
+    price,
+    qntd_max_adicionais,
+    id_secao,
+  }: CreateProdutoDTO): Promise<Produto> {
+    // Verificar se o produto existe na seção
+    const produtoAlreadyExists = await prisma.produto.findFirst({
       where: {
-        id
-      }
-    })
+        name,
+        id_secao
+      },
+    });
+    console.log('a', produtoAlreadyExists)
 
     if (produtoAlreadyExists) {
-      throw new AppError("Produto already exists!")
+      throw new AppError("Produto already exists!");
     }
 
     // Criar produto
@@ -29,14 +37,12 @@ export class CreateProdutoCase {
         qntd_max_adicionais,
         secao: {
           connect: {
-            id: id_secao 
-          }
-          
-        }
-      }
-    })
- 
-    return produto
+            id: id_secao,
+          },
+        },
+      },
+    });
 
+    return produto;
   }
 }

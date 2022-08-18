@@ -1,5 +1,4 @@
 export interface CreateProdutoDTO {
-  id: string
   name: string
   obs: string
   img: string
