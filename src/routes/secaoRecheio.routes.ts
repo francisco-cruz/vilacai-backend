@@ -12,6 +12,7 @@ const deleteSecaoRecheioController = new DeleteSecaoRecheioController();
 const secaoRecheioRoutes = Router();
 
 secaoRecheioRoutes.post("/", createSecaoRecheioController.handle);
+secaoRecheioRoutes.get("/:id", readSecaoRecheioCase.execute);
 secaoRecheioRoutes.get("/", readSecaoRecheioCase.execute);
 secaoRecheioRoutes.put("/", updateSecaoRecheioController.handle)
 secaoRecheioRoutes.delete("/", deleteSecaoRecheioController.handle);

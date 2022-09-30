@@ -5,12 +5,7 @@ import { Request, Response } from "express";
 
 export class ReadSecaoRecheioCase {
   async execute(req: Request, res: Response) {
-    const secoesRecheio = await prisma.secaoRecheio.findUnique({
-      where: {
-        id: req.params.id
-      },
-
-    })
+    const secoesRecheio = await prisma.secaoRecheio.findMany();
 
     return res.json(secoesRecheio);
   }

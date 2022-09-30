@@ -23,10 +23,10 @@ export class CreateProdutoCase {
     });
     console.log('a', produtoAlreadyExists)
 
+    // verificando se o produto já existe
     if (produtoAlreadyExists) {
       throw new AppError("Produto already exists!");
     }
-
     // Criar produto
     const produto = await prisma.produto.create({
       data: {

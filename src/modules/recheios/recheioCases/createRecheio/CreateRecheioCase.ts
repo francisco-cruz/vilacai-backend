@@ -14,12 +14,11 @@ export class CreateRecheioCase {
         name
       }
     })
-
+    // verificnado se o recheio já existe
     if (recheioAlreadyExists) {
       throw new AppError("Produto already exists!")
     }
-
-    // Criar produto
+    // Criar recheio
     const recheio = await prisma.recheio.create({
       data: {
         name,
@@ -29,6 +28,5 @@ export class CreateRecheioCase {
     })
 
     return recheio
-
   }
 }

@@ -6,9 +6,16 @@ const prisma = new PrismaClient();
 export class ReadRecheioCase {
   async execute(req: Request, res: Response) {
     // Ver recheios
-    const recheios = await prisma.recheio.findMany()
-
-    return res.json(recheios)
-
+      const recheio = await prisma.produto.findUnique({
+        where: {
+          id: req.params.id
+        },
+        
+        include: {
+          secao: true
+        }
+      })
+  
+    return res.json(recheio)
   }
 }
