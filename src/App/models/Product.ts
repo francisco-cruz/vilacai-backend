@@ -1,6 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, ManyToOne } from "typeorm";
-import { Secao } from "./Secao";
-
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    CreateDateColumn,
+    UpdateDateColumn,
+    JoinColumn,
+    ManyToOne,
+    ManyToMany,
+    JoinTable
+} from "typeorm";
+import { Section } from "./Section";
+import { Filling } from "./Filling";
+import { ProductType } from "./ProductType";
 
 @Entity()
 export class Product {
@@ -11,18 +22,24 @@ export class Product {
     name: string
 
     @Column({type: 'decimal', precision: 5, scale: 2, default: 0})
-    preco: number
+    price: number
 
     @Column({type: "boolean",default: true})
-    pro_disponivel: boolean
+    available: boolean
 
-    @Column({type: 'text'})
-    pro_imagem: string
+    @Column({type: 'text', nullable: true})
+    image: string
 
-    @ManyToOne(type => Secao) @JoinColumn()
-    secao: Secao
+    @ManyToOne(() => ProductType, (productType) => productType.products) @JoinColumn()
+    product_type: ProductType
 
-    @CreateDateColumn({name: 'create_at'})
+    @ManyToOne(() => Section, (section) => section.products) @JoinColumn()
+    section: Section
+
+    @ManyToMany(() => Filling) @JoinTable()
+    fillings: Filling[]
+
+    @CreateDateColumn({name: 'created_at'})
     created_at: Date
 
     @UpdateDateColumn({name: 'updated_at'})
