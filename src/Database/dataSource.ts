@@ -1,6 +1,8 @@
 import { DataSource } from "typeorm"
+import { Filling } from "../App/models/Filling";
 import { Product } from "../App/models/Product";
-import { Secao } from "../App/models/Secao";
+import { Section } from "../App/models/Section";
+import { ProductType } from "../App/models/ProductType";
 
 const AppDataSource = new DataSource({
     type: "postgres",
@@ -10,7 +12,7 @@ const AppDataSource = new DataSource({
     password: 'michel123',
     database: 'vilaacai',
     synchronize: true,
-    entities: [Secao, Product],
+    entities: [Section, Filling, ProductType, Product],
 })
 
 AppDataSource.initialize()
