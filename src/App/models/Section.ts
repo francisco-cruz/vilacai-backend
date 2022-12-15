@@ -13,7 +13,7 @@ export class Section {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({type: 'varchar', length: 45})
+    @Column({type: 'varchar', length: 45, unique: true})
     name: string
 
     @OneToMany(() => Product, (product) => product.section)
