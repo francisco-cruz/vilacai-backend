@@ -8,6 +8,8 @@ const port: string | number = process.env.SERVER_PORT || 3333;
 app.get('/products', productsController.index);
 app.get('/products/show', productsController.show);
 app.post('/products', productsController.create);
+app.delete('/products', productsController.remove);
+app.put('/products', productsController.update);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
