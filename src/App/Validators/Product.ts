@@ -7,7 +7,7 @@ import {
 } from 'yup';
 
 const productBaseSchema = object({
-    id: number().required()
+    id: number().required().integer()
 });
 
 const productCreateSchema = object({
