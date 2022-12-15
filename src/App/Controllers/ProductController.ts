@@ -74,7 +74,7 @@ class ProductController {
         
         if(!productFromDb)
             return res.status(404).json(
-                new ErrorHandler(product, "Product not found."));
+                new ErrorHandler(product, ["Product not found."]));
 
         return res.json({
             error: false,
