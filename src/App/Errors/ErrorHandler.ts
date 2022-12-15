@@ -2,7 +2,7 @@ class ErrorHandler {
     private objectt;
     private errors;
     
-    constructor(objectt: object, errors: any){
+    constructor(objectt: object, errors: string[] | string){
         this.objectt = objectt;
         this.errors = errors
     }
@@ -12,7 +12,7 @@ class ErrorHandler {
             error: true,
             fields: this.objectt,
             messages: this.errors
-        }
+        };
     }
 }
 
