@@ -2,19 +2,21 @@ const dataSource = require('../../Database/dataSource');
 import {Product} from "../models/Product";
 import {
     productCreateSchema,
+    productBaseSchema,
     productUpdateSchema,
-    ProductType,
+    ProductCreateType,
+    ProductBaseType,
     ProductUpdateType
 } from "../Validators/Product";
 import {ErrorHandler} from '../Errors/ErrorHandler';
 
+const productRepository = dataSource.getRepository(Product);
+
 class ProductController {
     
     async index(req:any, res:any): Promise<void> {
-        const products = await dataSource
-            .getRepository(Product)
-            .createQueryBuilder("product")
-            .getMany();
+        const products = await productRepository
+            .createQueryBuilder("product").getMany();
 
         return res.json({
                 error: false,
@@ -23,7 +25,7 @@ class ProductController {
     }
 
     async create(req:any, res:any): Promise<void> {
-        const product: ProductType = {
+        const product: ProductCreateType = {
             name: req.body.name,
             available: req.body.available,
             price: req.body.price
@@ -37,15 +39,14 @@ class ProductController {
                 new ErrorHandler(product, validation.errors).handle());
 
         try {
-            await dataSource
-                .createQueryBuilder()
+            await productRepository.createQueryBuilder()
                 .insert()
                 .into(Product)
                 .values(product)
                 .execute();
         } catch (err: any) {
             return res.status(400).json(
-                new ErrorHandler(product, err).handle());
+                new ErrorHandler(product, err.message).handle());
         }
         
         return res.status(201).json({
@@ -55,19 +56,18 @@ class ProductController {
     }
 
     async show(req:any, res:any): Promise<void> {
-        const product: ProductUpdateType = {
+        const product: ProductBaseType = {
             id: req.body.id
         };
 
-        const validation = await productUpdateSchema.validate(product)
+        const validation = await productBaseSchema.validate(product)
             .catch(err => { return err; });
         
         if(validation.errors)
             return res.status(400).json(
                 new ErrorHandler(product, validation.errors).handle());
 
-        const productFromDb = await dataSource
-                .getRepository(Product)
+        const productFromDb = await productRepository
                 .createQueryBuilder("product")
                 .where("product.id = :id", { id: product.id })
                 .getOne();
@@ -79,6 +79,65 @@ class ProductController {
         return res.json({
             error: false,
             product: productFromDb
+        });
+    }
+
+    async remove(req:any, res:any): Promise<void> {
+        const product: ProductBaseType = {
+            id: req.body.id
+        };
+
+        const validation = await productBaseSchema.validate(product)
+            .catch(err => { return err; });
+
+        if(validation.errors)
+            return res.status(404).json(
+                new ErrorHandler(product, validation.errors));
+
+        try{
+            await productRepository
+                .createQueryBuilder('products')
+                .delete()
+                .from(Product)
+                .where("id = :id", {id: product.id})
+                .execute();
+        }catch(err:any) {
+            return res.status(400).json(
+                new ErrorHandler(product, err.message).handle());
+        }
+
+        return res.json({
+            error: false,
+            product: product
+        });
+
+    }
+
+    async update(req:any, res:any): Promise<void> {
+        const product: ProductUpdateType = {
+            id: req.body.id,
+            name: req.body.name,
+            price: req.body.price,
+            available: req.body.available
+        }
+
+        const validation = await productUpdateSchema.validate(product)
+            .catch(err => { return err; });
+
+        if(validation.errrors)
+            return res.status(400).json(
+                new ErrorHandler(product, validation.errors));
+        
+        await productRepository
+            .createQueryBuilder('products')
+            .update(Product)
+            .set(product)
+            .where("id = :id", { id: product.id })
+            .execute()
+
+        return res.json({
+            error: false,
+            product: product
         });
     }
 
