@@ -81,6 +81,16 @@ class SectionController {
         });
     }
 
+    async addProduct(req:any, res:any): Promise<void> {
+        const section = {
+            id: req.body.id,
+            productId: req.body.productId
+        };
+
+        
+
+    }
+
     async update(req:any, res:any): Promise<void> {
         const section: SectionUpdateType = {
             id: req.body.id,
