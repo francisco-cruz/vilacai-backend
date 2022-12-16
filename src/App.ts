@@ -17,6 +17,7 @@ app.post('/sections', sectionController.create);
 app.get('/sections/show', sectionController.show);
 app.delete('/sections', sectionController.remove);
 app.put('/sections', sectionController.update);
+app.post('/section/addProduct', sectionController.addProduct);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
