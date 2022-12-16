@@ -1,5 +1,6 @@
 const dataSource = require('../../Database/dataSource');
 import {Product} from "../models/Product";
+import { Section } from "../models/Section";
 import {
     productCreateSchema,
     productBaseSchema,
@@ -11,6 +12,7 @@ import {
 import {ErrorHandler} from '../Errors/ErrorHandler';
 
 const productRepository = dataSource.getRepository(Product);
+const sectionRepository = dataSource.getRepository(Section);
 
 class ProductController {
     
@@ -26,6 +28,7 @@ class ProductController {
 
     async create(req:any, res:any): Promise<void> {
         const product: ProductCreateType = {
+            section: req.body.section,
             name: req.body.name,
             available: req.body.available,
             price: req.body.price
@@ -38,12 +41,22 @@ class ProductController {
             return res.status(400).json(
                 new ErrorHandler(product, validation.errors).handle());
 
+        const section = await sectionRepository
+            .createQueryBuilder('section')
+            .where("section.id = :id", {id: product.section})
+            .getOne();
+
+        if(!section)
+            return res.status(404).json(
+                new ErrorHandler(product, ["Section not found"]));
+
         try {
-            await productRepository.createQueryBuilder()
-                .insert()
-                .into(Product)
-                .values(product)
-                .execute();
+            const productToSave = new Product();
+            productToSave.name = product.name;
+            productToSave.available = true || product.available;
+            productToSave.price = product.price;
+            productToSave.section = section;
+            dataSource.manager.save(productToSave);
         } catch (err: any) {
             return res.status(400).json(
                 new ErrorHandler(product, err.message).handle());
@@ -68,9 +81,10 @@ class ProductController {
                 new ErrorHandler(product, validation.errors).handle());
 
         const productFromDb = await productRepository
-                .createQueryBuilder("product")
-                .where("product.id = :id", { id: product.id })
-                .getOne();
+            .createQueryBuilder("product")
+            .leftJoinAndSelect("product.section", "section")
+            .where("product.id = :id", {id: product.id})
+            .getOne();
         
         if(!productFromDb)
             return res.status(404).json(
@@ -116,6 +130,7 @@ class ProductController {
     async update(req:any, res:any): Promise<void> {
         const product: ProductUpdateType = {
             id: req.body.id,
+            section: req.body.section,
             name: req.body.name,
             price: req.body.price,
             available: req.body.available
@@ -128,12 +143,17 @@ class ProductController {
             return res.status(400).json(
                 new ErrorHandler(product, validation.errors));
         
+        try{
         await productRepository
             .createQueryBuilder('products')
             .update(Product)
             .set(product)
             .where("id = :id", { id: product.id })
-            .execute()
+            .execute();
+        }catch(err:any){
+            return res.status(400).json(
+                new ErrorHandler(product, err.message).handle());
+        }
 
         return res.json({
             error: false,
