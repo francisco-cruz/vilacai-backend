@@ -2,7 +2,9 @@ const dataSource = require("../../Database/dataSource");
 import { Filling } from "../models/Filling";
 import {
     FillingCreateType,
-    fillingCreateSchema
+    fillingCreateSchema,
+    FillingBaseType,
+    fillingBaseSchema
 } from "../Validators/Filling";
 import { ErrorHandler } from "../Errors/ErrorHandler";
 
@@ -47,6 +49,34 @@ class FillingsController {
         return res.status(201).json({
             error: false,
             filling: filling
+        });
+
+    }
+
+    async show(req:any,res:any): Promise<any> {
+        const filling: FillingBaseType = {
+            id: req.body.id
+        };
+
+        const validation = await fillingBaseSchema.validate(filling)
+            .catch(err => {return err});
+
+        if(validation.errors)
+            return res.status(400).json(
+                new ErrorHandler(filling, validation.errors).handle());
+
+        const fillingFromDb = await fillingRepository
+            .createQueryBuilder("filling")
+            .where("filling.id = :id", {id: filling.id})
+            .getOne();
+
+        if(!fillingFromDb)
+            return res.status(404).json(
+                new ErrorHandler(filling, ["Filling not found."]).handle());
+
+        return res.json({
+            error: false,
+            filling: fillingFromDb
         });
 
     }
