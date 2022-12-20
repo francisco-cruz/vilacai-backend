@@ -21,6 +21,7 @@ app.put('/sections', sectionController.update);
 
 app.get('/fillings', fillingController.index);
 app.post('/fillings', fillingController.create);
+app.get('/fillings/show', fillingController.show);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
