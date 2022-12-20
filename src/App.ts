@@ -3,6 +3,7 @@ const app = require('./Server');
 
 const productsController = require('./App/Controllers/ProductController');
 const sectionController = require('./App/Controllers/SectionController');
+const fillingController = require('./App/Controllers/FillingsController');
 
 const port: string | number = process.env.SERVER_PORT || 3333;
 
@@ -17,7 +18,8 @@ app.post('/sections', sectionController.create);
 app.get('/sections/show', sectionController.show);
 app.delete('/sections', sectionController.remove);
 app.put('/sections', sectionController.update);
-app.post('/section/addProduct', sectionController.addProduct);
+
+app.get('/fillings', fillingController.index);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
