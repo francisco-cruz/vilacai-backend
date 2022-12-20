@@ -10,6 +10,8 @@ import {
     ProductUpdateType
 } from "../Validators/Product";
 import {ErrorHandler} from '../Errors/ErrorHandler';
+import { Filling } from "../models/Filling";
+const Utils = require("../../Database/Utils");
 
 const productRepository = dataSource.getRepository(Product);
 const sectionRepository = dataSource.getRepository(Section);
@@ -80,19 +82,14 @@ class ProductController {
             return res.status(400).json(
                 new ErrorHandler(product, validation.errors).handle());
 
-        const productFromDb = await productRepository
-            .createQueryBuilder("product")
-            .leftJoinAndSelect("product.section", "section")
-            .where("product.id = :id", {id: product.id})
-            .getOne();
-        
-        if(!productFromDb)
+        const productExists = await Utils.exists(Product, product.id);
+        if(!productExists)
             return res.status(404).json(
-                new ErrorHandler(product, ["Product not found."]).handle());
+                new ErrorHandler(product, ['Product not found.']));
 
         return res.json({
             error: false,
-            product: productFromDb
+            product: productExists
         });
     }
 
@@ -143,13 +140,18 @@ class ProductController {
             return res.status(400).json(
                 new ErrorHandler(product, validation.errors).handle());
         
+        const productExists = await Utils.exists(Product, product.id);
+        if(!productExists)
+            return res.status(404).json(
+                new ErrorHandler(product, ['Product not found.']));
+
         try{
-        await productRepository
-            .createQueryBuilder()
-            .update(Product)
-            .set(product)
-            .where("id = :id", { id: product.id })
-            .execute();
+            await productRepository
+                .createQueryBuilder()
+                .update(Product)
+                .set(product)
+                .where("id = :id", { id: product.id })
+                .execute();
         }catch(err:any){
             return res.status(400).json(
                 new ErrorHandler(product, err.message).handle());
