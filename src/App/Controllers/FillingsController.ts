@@ -11,7 +11,7 @@ const fillingRepository = dataSource.getRepository(Filling);
 class FillingsController {
 
     async index(req:any, res:any): Promise<any> {
-        const fillings = fillingRepository.createQueryBuilder('fillings')
+        const fillings = await fillingRepository.createQueryBuilder('fillings')
             .getMany();
 
         return res.json({
