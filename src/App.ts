@@ -20,6 +20,7 @@ app.delete('/sections', sectionController.remove);
 app.put('/sections', sectionController.update);
 
 app.get('/fillings', fillingController.index);
+app.post('/fillings', fillingController.create);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
