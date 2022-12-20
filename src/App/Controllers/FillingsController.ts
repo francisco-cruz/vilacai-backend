@@ -31,7 +31,7 @@ class FillingsController {
 
         if(validation.errors)
             return res.status(400).json(
-                new ErrorHandler(filling, validation.errors).handle);
+                new ErrorHandler(filling, validation.errors).handle());
 
         try{
             await fillingRepository.createQueryBuilder('filling')
