@@ -110,10 +110,10 @@ class ProductController {
 
         try{
             await productRepository
-                .createQueryBuilder('products')
+                .createQueryBuilder('product')
                 .delete()
                 .from(Product)
-                .where("id = :id", {id: product.id})
+                .where("product.id = :id", {id: product.id})
                 .execute();
         }catch(err:any) {
             return res.status(400).json(
