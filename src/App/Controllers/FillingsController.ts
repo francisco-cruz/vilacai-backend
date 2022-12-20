@@ -68,18 +68,14 @@ class FillingsController {
             return res.status(400).json(
                 new ErrorHandler(filling, validation.errors).handle());
 
-        const fillingFromDb = await fillingRepository
-            .createQueryBuilder("filling")
-            .where("filling.id = :id", {id: filling.id})
-            .getOne();
-
-        if(!fillingFromDb)
+        const fillingExists = await Utils.exists(Filling, filling.id);
+        if(!fillingExists)
             return res.status(404).json(
-                new ErrorHandler(filling, ["Filling not found."]).handle());
+                new ErrorHandler(filling, ['Filling not found.']));
 
         return res.json({
             error: false,
-            filling: fillingFromDb
+            filling: fillingExists
         });
 
     }
