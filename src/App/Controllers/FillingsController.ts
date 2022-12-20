@@ -4,9 +4,12 @@ import {
     FillingCreateType,
     fillingCreateSchema,
     FillingBaseType,
-    fillingBaseSchema
+    fillingBaseSchema,
+    FillingUpdateType,
+    fillingUpdateSchema
 } from "../Validators/Filling";
 import { ErrorHandler } from "../Errors/ErrorHandler";
+const Utils = require("../../Database/Utils");
 
 const fillingRepository = dataSource.getRepository(Filling);
 
@@ -79,6 +82,73 @@ class FillingsController {
             filling: fillingFromDb
         });
 
+    }
+
+    async remove(req:any,res:any): Promise<any> {
+        const filling: FillingBaseType = {
+            id: req.body.id
+        };
+
+        const validation = await fillingBaseSchema.validate(filling)
+            .catch(err => { return err; });
+
+        if(validation.errors)
+            return res.status(404).json(
+                new ErrorHandler(filling, validation.errors));
+
+        try{
+            await fillingRepository
+                .createQueryBuilder('filling')
+                .delete()
+                .from(Filling)
+                .where("filling.id = :id", {id: filling.id})
+                .execute();
+        }catch(err:any) {
+            return res.status(400).json(
+                new ErrorHandler(filling, err.message).handle());
+        }
+
+        return res.json({
+            error: false,
+            filling: filling
+        });
+    }
+
+    async update(req:any,res:any): Promise<any>{
+        const filling: FillingUpdateType = {
+            id: req.body.id,
+            name: req.body.name,
+            available: req.body.available
+        };
+
+        const validation = await fillingUpdateSchema.validate(filling)
+            .catch(err => {return err});
+
+        if(validation.errors)
+            return res.status(400).json(
+                new ErrorHandler(filling, validation.errors).handle());
+
+        const fillingExists = await Utils.exists(Filling, filling.id);
+        if(!fillingExists)
+            return res.status(404).json(
+                new ErrorHandler(filling, ['Filling not found.']));
+
+        try{
+            await fillingRepository
+                .createQueryBuilder('filling')
+                .update(Filling)
+                .set(filling)
+                .where("filling.id = :id", { id: filling.id })
+                .execute()
+        }catch(err:any){
+            return res.status(400).json(
+                new ErrorHandler(filling, err.message).handle());
+        }
+
+        return res.json({
+            error: false,
+            filling: filling
+        });
     }
 
 }
