@@ -16,7 +16,7 @@ const sectionRepository = dataSource.getRepository(Section);
 
 class ProductController {
     
-    async index(req:any, res:any): Promise<void> {
+    async index(req:any, res:any): Promise<any> {
         const products = await productRepository
             .createQueryBuilder("product").getMany();
 
@@ -26,7 +26,7 @@ class ProductController {
             });
     }
 
-    async create(req:any, res:any): Promise<void> {
+    async create(req:any, res:any): Promise<any> {
         const product: ProductCreateType = {
             section: req.body.section,
             name: req.body.name,
@@ -48,7 +48,7 @@ class ProductController {
 
         if(!section)
             return res.status(404).json(
-                new ErrorHandler(product, ["Section not found"]));
+                new ErrorHandler(product, ["Section not found"]).handle());
 
         try {
             const productToSave = new Product();
@@ -68,7 +68,7 @@ class ProductController {
         });
     }
 
-    async show(req:any, res:any): Promise<void> {
+    async show(req:any, res:any): Promise<any> {
         const product: ProductBaseType = {
             id: req.body.id
         };
@@ -88,7 +88,7 @@ class ProductController {
         
         if(!productFromDb)
             return res.status(404).json(
-                new ErrorHandler(product, ["Product not found."]));
+                new ErrorHandler(product, ["Product not found."]).handle());
 
         return res.json({
             error: false,
@@ -96,7 +96,7 @@ class ProductController {
         });
     }
 
-    async remove(req:any, res:any): Promise<void> {
+    async remove(req:any, res:any): Promise<any> {
         const product: ProductBaseType = {
             id: req.body.id
         };
@@ -127,7 +127,7 @@ class ProductController {
 
     }
 
-    async update(req:any, res:any): Promise<void> {
+    async update(req:any, res:any): Promise<any> {
         const product: ProductUpdateType = {
             id: req.body.id,
             section: req.body.section,
@@ -139,13 +139,13 @@ class ProductController {
         const validation = await productUpdateSchema.validate(product)
             .catch(err => { return err; });
 
-        if(validation.errrors)
+        if(validation.errors)
             return res.status(400).json(
-                new ErrorHandler(product, validation.errors));
+                new ErrorHandler(product, validation.errors).handle());
         
         try{
         await productRepository
-            .createQueryBuilder('products')
+            .createQueryBuilder()
             .update(Product)
             .set(product)
             .where("id = :id", { id: product.id })
