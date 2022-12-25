@@ -89,6 +89,7 @@ class ProductController {
                 .createQueryBuilder('product')
                 .leftJoinAndSelect("product.section", "section")
                 .leftJoinAndSelect("product.fillings", "fillings")
+                .leftJoinAndSelect("product.type", "type")
                 .where("product.id = :id", {id: product.id})
                 .getOne();
 
