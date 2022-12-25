@@ -14,7 +14,7 @@ export class ProductType {
     id: number
 
     @Column({type: 'varchar', length: 45})
-    tipo: string
+    type: string
 
     @OneToMany(() => Product, (product) => product.section)
     products: Product[]
