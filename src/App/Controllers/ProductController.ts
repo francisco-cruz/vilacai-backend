@@ -16,7 +16,6 @@ import { Filling } from "../models/Filling";
 const Utils = require("../../Database/Utils");
 
 const productRepository = dataSource.getRepository(Product);
-const sectionRepository = dataSource.getRepository(Section);
 
 class ProductController {
     
@@ -84,7 +83,7 @@ class ProductController {
         const productExists = await Utils.exists(Product, product.id);
         if(!productExists)
             return res.status(404).json(
-                new ErrorHandler(product, ['Product not found.']));
+                new ErrorHandler(product, ['Product not found.']).handle());
 
         const productFromDb = await productRepository
                 .createQueryBuilder('product')
@@ -109,7 +108,7 @@ class ProductController {
 
         if(validation.errors)
             return res.status(404).json(
-                new ErrorHandler(product, validation.errors));
+                new ErrorHandler(product, validation.errors).handle());
 
         try{
             await productRepository
@@ -149,7 +148,7 @@ class ProductController {
         const productExists = await Utils.exists(Product, product.id);
         if(!productExists)
             return res.status(404).json(
-                new ErrorHandler(product, ['Product not found.']));
+                new ErrorHandler(product, ['Product not found.']).handle());
 
         try{
             await productRepository
@@ -180,16 +179,16 @@ class ProductController {
 
         if(validation.errors)
             return res.status(400).json(
-                new ErrorHandler(productFilling, validation.errors));
+                new ErrorHandler(productFilling, validation.errors).handle());
 
         const productExists = await Utils.exists(Product, productFilling.productId);
         if(!productExists)
             return res.status(404).json(
-                new ErrorHandler(productFilling, ['Product not found.']));
+                new ErrorHandler(productFilling, ['Product not found.']).handle());
         const fillingExists = await Utils.exists(Filling, productFilling.fillingId);
         if(!fillingExists)
             return res.status(404).json(
-                new ErrorHandler(productFilling, ['Filling not found.']));
+                new ErrorHandler(productFilling, ['Filling not found.']).handle());
         
         try{
             await productRepository
@@ -206,6 +205,46 @@ class ProductController {
             error: false,
             product: productFilling
         })
+    }
+
+    async removeFilling(req:any,res:any): Promise<any> {
+        const productFilling: ProductAddFillingType = {
+            productId: req.body.productId,
+            fillingId: req.body.fillingId
+        };
+
+        const validation = await productAddFillingSchema.validate(productFilling)
+            .catch(err => {return err});
+
+        if(validation.errors)
+            return res.status(400).json(
+                new ErrorHandler(productFilling, validation.errors).handle());
+
+        const productExists = await Utils.exists(Product, productFilling.productId);
+        if(!productExists)
+            return res.status(404).json(
+                new ErrorHandler(productFilling, ['Product not found.']).handle());
+        const fillingExists = await Utils.exists(Filling, productFilling.fillingId);
+        if(!fillingExists)
+            return res.status(404).json(
+                new ErrorHandler(productFilling, ['Filling not found.']).handle());
+
+        try{
+            await productRepository
+                .createQueryBuilder('product')
+                .relation(Product, 'fillings')
+                .of(productExists)
+                .delete(productFilling.fillingId);
+        }catch(err:any){
+            return res.status(400).json(
+                new ErrorHandler(productFilling, err.message).handle());
+        }
+
+        return res.json({
+            error: false,
+            product: productFilling
+        });
+
     }
 
 }
