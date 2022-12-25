@@ -13,6 +13,7 @@ app.post('/products', productsController.create);
 app.delete('/products', productsController.remove);
 app.put('/products', productsController.update);
 app.post('/products/fillings', productsController.addFilling);
+app.delete('/products/fillings', productsController.removeFilling);
 
 app.get('/sections', sectionController.index);
 app.post('/sections', sectionController.create);
