@@ -7,7 +7,9 @@ import {
     productUpdateSchema,
     ProductCreateType,
     ProductBaseType,
-    ProductUpdateType
+    ProductUpdateType,
+    ProductAddFillingType,
+    productAddFillingSchema
 } from "../Validators/Product";
 import {ErrorHandler} from '../Errors/ErrorHandler';
 import { Filling } from "../models/Filling";
@@ -43,12 +45,9 @@ class ProductController {
             return res.status(400).json(
                 new ErrorHandler(product, validation.errors).handle());
 
-        const section = await sectionRepository
-            .createQueryBuilder('section')
-            .where("section.id = :id", {id: product.section})
-            .getOne();
+        const sectionExist = await Utils.exists(Section, product.section);
 
-        if(!section)
+        if(!sectionExist)
             return res.status(404).json(
                 new ErrorHandler(product, ["Section not found"]).handle());
 
@@ -57,7 +56,7 @@ class ProductController {
             productToSave.name = product.name;
             productToSave.available = true || product.available;
             productToSave.price = product.price;
-            productToSave.section = section;
+            productToSave.section = sectionExist;
             dataSource.manager.save(productToSave);
         } catch (err: any) {
             return res.status(400).json(
@@ -87,9 +86,16 @@ class ProductController {
             return res.status(404).json(
                 new ErrorHandler(product, ['Product not found.']));
 
+        const productFromDb = await productRepository
+                .createQueryBuilder('product')
+                .leftJoinAndSelect("product.section", "section")
+                .leftJoinAndSelect("product.fillings", "fillings")
+                .where("product.id = :id", {id: product.id})
+                .getOne();
+
         return res.json({
             error: false,
-            product: productExists
+            product: productFromDb
         });
     }
 
@@ -161,6 +167,45 @@ class ProductController {
             error: false,
             product: product
         });
+    }
+
+    async addFilling(req:any,res:any): Promise<any> {
+        const productFilling: ProductAddFillingType = {
+            fillingId: req.body.fillingId,
+            productId: req.body.productId
+        };
+
+        const validation = await productAddFillingSchema.validate(productFilling)
+            .catch(err => {return err});
+
+        if(validation.errors)
+            return res.status(400).json(
+                new ErrorHandler(productFilling, validation.errors));
+
+        const productExists = await Utils.exists(Product, productFilling.productId);
+        if(!productExists)
+            return res.status(404).json(
+                new ErrorHandler(productFilling, ['Product not found.']));
+        const fillingExists = await Utils.exists(Filling, productFilling.fillingId);
+        if(!fillingExists)
+            return res.status(404).json(
+                new ErrorHandler(productFilling, ['Filling not found.']));
+        
+        try{
+            await productRepository
+                .createQueryBuilder('product')
+                .relation(Product, 'fillings')
+                .of(productExists)
+                .add(productFilling.fillingId);
+        }catch(err:any){
+            return res.status(400).json(
+                new ErrorHandler(productFilling, err.message).handle());
+        }
+            
+        return res.json({
+            error: false,
+            product: productFilling
+        })
     }
 
 }
