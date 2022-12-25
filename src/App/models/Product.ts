@@ -36,6 +36,9 @@ export class Product {
     @ManyToOne(() => Section, (section) => section.products) @JoinColumn()
     section: Section
 
+    @ManyToOne(() => ProductType, (type) => type.products) @JoinColumn()
+    type: ProductType
+
     @ManyToMany(() => Filling) @JoinTable()
     fillings: Filling[]
 
