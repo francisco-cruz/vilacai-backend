@@ -17,12 +17,18 @@ const productCreateSchema = object({
     available: boolean()
 });
 
+const productAddFillingSchema = object({
+    productId: number().required().integer().positive(),
+    fillingId: number().required().integer().positive()
+});
+
 const productUpdateSchema = object({})
     .concat(productBaseSchema).concat(productCreateSchema);
 
 type ProductCreateType = InferType<typeof productCreateSchema>;
 type ProductBaseType = InferType<typeof productBaseSchema>;
 type ProductUpdateType = InferType<typeof productUpdateSchema>;
+type ProductAddFillingType = InferType<typeof productAddFillingSchema>;
 
 export {
     productCreateSchema,
@@ -30,5 +36,7 @@ export {
     ProductCreateType,
     productUpdateSchema,
     ProductBaseType,
-    ProductUpdateType
+    ProductUpdateType,
+    ProductAddFillingType,
+    productAddFillingSchema
 };
