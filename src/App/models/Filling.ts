@@ -17,6 +17,9 @@ export class Filling {
     @Column({type: 'boolean', default: true})
     available: boolean
 
+    @Column({type: 'decimal', precision: 5, scale: 2, default: 0})
+    price: number
+
     @CreateDateColumn({name: 'created_at'})
     created_at: Date
 
