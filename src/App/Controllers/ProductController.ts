@@ -9,10 +9,13 @@ import {
     ProductBaseType,
     ProductUpdateType,
     ProductAddFillingType,
-    productAddFillingSchema
+    productAddFillingSchema,
+    ProductTypeType,
+    productTypeSchema
 } from "../Validators/Product";
 import {ErrorHandler} from '../Errors/ErrorHandler';
 import { Filling } from "../models/Filling";
+import { ProductType } from "../models/ProductType";
 const Utils = require("../../Database/Utils");
 
 const productRepository = dataSource.getRepository(Product);
@@ -21,7 +24,9 @@ class ProductController {
     
     async index(req:any, res:any): Promise<any> {
         const products = await productRepository
-            .createQueryBuilder("product").getMany();
+            .createQueryBuilder("product")
+            .leftJoinAndSelect("product.section", "section")
+            .getMany();
 
         return res.json({
                 error: false,
@@ -34,7 +39,8 @@ class ProductController {
             section: req.body.section,
             name: req.body.name,
             available: req.body.available,
-            price: req.body.price
+            price: req.body.price,
+            qntdMaxFilling: req.body.qntdMaxFilling
         };
 
         const validation = await productCreateSchema.validate(product)
@@ -89,7 +95,7 @@ class ProductController {
                 .createQueryBuilder('product')
                 .leftJoinAndSelect("product.section", "section")
                 .leftJoinAndSelect("product.fillings", "fillings")
-                .leftJoinAndSelect("product.type", "type")
+                .leftJoinAndSelect("product.types", "types")
                 .where("product.id = :id", {id: product.id})
                 .getOne();
 
@@ -136,7 +142,8 @@ class ProductController {
             section: req.body.section,
             name: req.body.name,
             price: req.body.price,
-            available: req.body.available
+            available: req.body.available,
+            qntdMaxFilling: req.body.qntdMaxFilling
         }
 
         const validation = await productUpdateSchema.validate(product)
@@ -195,8 +202,8 @@ class ProductController {
             await productRepository
                 .createQueryBuilder('product')
                 .relation(Product, 'fillings')
-                .of(productExists)
-                .add(productFilling.fillingId);
+                .of({id: productFilling.productId})
+                .add({id: productFilling.fillingId});
         }catch(err:any){
             return res.status(400).json(
                 new ErrorHandler(productFilling, err.message).handle());
@@ -234,8 +241,8 @@ class ProductController {
             await productRepository
                 .createQueryBuilder('product')
                 .relation(Product, 'fillings')
-                .of(productExists)
-                .delete(productFilling.fillingId);
+                .of({id: productFilling.productId})
+                .remove({id: productFilling.fillingId});
         }catch(err:any){
             return res.status(400).json(
                 new ErrorHandler(productFilling, err.message).handle());
@@ -246,6 +253,84 @@ class ProductController {
             product: productFilling
         });
 
+    }
+
+    async addType(req:any,res:any): Promise<any> {
+        const productTypeObj: ProductTypeType = {
+            productId: req.body.productId,
+            typeId: req.body.typeId
+        };
+
+        const validation = await productTypeSchema.validate(productTypeObj)
+            .catch(err => {return err});
+
+        if(validation.errors)
+            return res.status(400).json(
+                new ErrorHandler(productTypeObj, validation.errors).handle());
+
+        const productExists = await Utils.exists(Product, productTypeObj.productId);
+        if(!productExists)
+            return res.status(404).json(
+                new ErrorHandler(productTypeObj, ['Product not found.']).handle());
+        const typeExists = await Utils.exists(ProductType, productTypeObj.typeId);
+        if(!typeExists)
+            return res.status(404).json(
+                new ErrorHandler(productTypeObj, ['Type not found.']).handle());
+        
+        try {
+            await productRepository
+                .createQueryBuilder('product')
+                .relation(Product, 'types')
+                .of({id: productTypeObj.productId})
+                .add({id: productTypeObj.typeId});
+        }catch(err:any){
+            return res.status(400).json(
+                new ErrorHandler(productTypeObj, err.message).handle());
+        }
+
+        return res.json({
+            error: false,
+            propuctType: productTypeObj
+        });
+    }
+
+    async removeType(req:any,res:any): Promise<any> {
+        const productTypeObj: ProductTypeType = {
+            productId: req.body.productId,
+            typeId: req.body.typeId
+        };
+
+        const validation = await productTypeSchema.validate(productTypeObj)
+            .catch(err => {return err});
+
+        if(validation.errors)
+            return res.status(400).json(
+                new ErrorHandler(productTypeObj, validation.errors).handle());
+
+        const productExists = await Utils.exists(Product, productTypeObj.productId);
+        if(!productExists)
+            return res.status(404).json(
+                new ErrorHandler(productTypeObj, ['Product not found.']).handle());
+        const typeExists = await Utils.exists(ProductType, productTypeObj.typeId);
+        if(!typeExists)
+            return res.status(404).json(
+                new ErrorHandler(productTypeObj, ['Type not found.']).handle());
+        
+        try {
+            await productRepository
+                .createQueryBuilder('product')
+                .relation(Product, 'types')
+                .of({id: productTypeObj.productId})
+                .remove({id: productTypeObj.typeId})
+        }catch(err:any){
+            return res.status(400).json(
+                new ErrorHandler(productTypeObj, err.message).handle());
+        }
+
+        return res.json({
+            error: false,
+            propuctType: productTypeObj
+        });
     }
 
 }
