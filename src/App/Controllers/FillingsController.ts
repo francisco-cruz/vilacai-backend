@@ -16,8 +16,8 @@ const fillingRepository = dataSource.getRepository(Filling);
 class FillingsController {
 
     async index(req:any, res:any): Promise<any> {
-        const fillings = await fillingRepository.createQueryBuilder('fillings')
-            .getMany();
+        const fillings = await fillingRepository
+        .createQueryBuilder('fillings').getMany();
 
         return res.json({
             error: false,
@@ -28,7 +28,8 @@ class FillingsController {
     async create(req:any, res:any): Promise<any> {
         const filling: FillingCreateType = {
             name: req.body.name,
-            available: req.body.available
+            available: req.body.available,
+            price: req.body.price
         }
 
         const validation = await fillingCreateSchema.validate(filling)
@@ -114,7 +115,8 @@ class FillingsController {
         const filling: FillingUpdateType = {
             id: req.body.id,
             name: req.body.name,
-            available: req.body.available
+            available: req.body.available,
+            price: req.body.price
         };
 
         const validation = await fillingUpdateSchema.validate(filling)
