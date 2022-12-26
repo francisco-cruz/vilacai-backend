@@ -7,7 +7,8 @@ import {
     JoinColumn,
     ManyToOne,
     ManyToMany,
-    JoinTable
+    JoinTable,
+    OneToMany
 } from "typeorm";
 import { Section } from "./Section";
 import { Filling } from "./Filling";
@@ -24,20 +25,20 @@ export class Product {
     @Column({type: 'decimal', precision: 5, scale: 2, default: 0})
     price: number
 
+    @Column({type: "integer", default: 1})
+    qntdMaxFilling: number
+
     @Column({type: "boolean",default: true})
     available: boolean
 
     @Column({type: 'text', nullable: true})
     image: string
 
-    @ManyToOne(() => ProductType, (productType) => productType.products) @JoinColumn()
-    product_type: ProductType
+    @ManyToMany(() => ProductType) @JoinTable()
+    types: ProductType[]
 
     @ManyToOne(() => Section, (section) => section.products) @JoinColumn()
     section: Section
-
-    @ManyToOne(() => ProductType, (type) => type.products) @JoinColumn()
-    type: ProductType
 
     @ManyToMany(() => Filling) @JoinTable()
     fillings: Filling[]
