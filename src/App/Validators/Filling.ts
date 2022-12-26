@@ -12,6 +12,7 @@ const fillingBaseSchema = object({
 
 const fillingCreateSchema = object({
     name: string().required().min(1).max(45),
+    price: number().min(0.01).required().positive(),
     available: boolean()
 });
 
