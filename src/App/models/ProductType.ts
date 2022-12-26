@@ -4,7 +4,9 @@ import {
     PrimaryGeneratedColumn,
     CreateDateColumn,
     UpdateDateColumn,
-    OneToMany
+    OneToMany,
+    ManyToOne,
+    JoinColumn
 } from "typeorm";
 import { Product } from "./Product";
 
@@ -18,6 +20,9 @@ export class ProductType {
 
     @OneToMany(() => Product, (product) => product.section)
     products: Product[]
+
+    @ManyToOne(() => Product, (product) => product.types) @JoinColumn()
+    product: Product
 
     @CreateDateColumn({name: 'created_at'})
     created_at: Date
