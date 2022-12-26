@@ -15,6 +15,8 @@ app.delete('/products', productsController.remove);
 app.put('/products', productsController.update);
 app.post('/products/fillings', productsController.addFilling);
 app.delete('/products/fillings', productsController.removeFilling);
+app.post('/products/types', productsController.addType);
+app.delete('/products/types', productsController.removeType);
 
 app.get('/sections', sectionController.index);
 app.post('/sections', sectionController.create);
