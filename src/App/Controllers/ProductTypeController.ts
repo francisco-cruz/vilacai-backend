@@ -7,7 +7,7 @@ import {
     ProductTypeCreateType,
     productTypeSchema
 } from "../Validators/ProductTypeValidator";
-const Utils = require("../../Database/Utils");
+const Utils = require("../Utils/Utils");
 
 const productTypeRepository = dataSource.getRepository(ProductType);
 
