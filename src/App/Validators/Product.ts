@@ -5,6 +5,7 @@ import {
     boolean,
     InferType
 } from 'yup';
+import { ImageBaseSchema } from './Image';
 
 const productBaseSchema = object({
     id: number().required().integer().positive(),
@@ -16,7 +17,7 @@ const productCreateSchema = object({
     price: number().min(0.01).required().positive(),
     available: boolean(),
     qntdMaxFilling: number().integer().min(1).positive()
-});
+}).concat(ImageBaseSchema);
 
 const productAddFillingSchema = object({
     productId: number().required().integer().positive(),
