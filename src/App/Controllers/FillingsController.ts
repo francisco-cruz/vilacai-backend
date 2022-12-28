@@ -9,7 +9,7 @@ import {
     fillingUpdateSchema
 } from "../Validators/Filling";
 import { ErrorHandler } from "../Errors/ErrorHandler";
-const Utils = require("../../Database/Utils");
+const Utils = require("../Utils/Utils");
 
 const fillingRepository = dataSource.getRepository(Filling);
 
