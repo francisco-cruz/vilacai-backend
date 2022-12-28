@@ -8,11 +8,12 @@ import {
     ManyToOne,
     ManyToMany,
     JoinTable,
-    OneToMany
+    OneToOne
 } from "typeorm";
 import { Section } from "./Section";
 import { Filling } from "./Filling";
 import { ProductType } from "./ProductType";
+import { Image } from "./Image";
 
 @Entity()
 export class Product {
@@ -31,8 +32,8 @@ export class Product {
     @Column({type: "boolean",default: true})
     available: boolean
 
-    @Column({type: 'text', nullable: true})
-    image: string
+    @OneToOne(() => Image, {nullable: true}) @JoinColumn()
+    image: Image
 
     @ManyToMany(() => ProductType) @JoinTable()
     types: ProductType[]
