@@ -1,12 +1,19 @@
 require('dotenv').config();
 const app = require('./Server');
-
 const productsController = require('./App/Controllers/ProductController');
 const sectionController = require('./App/Controllers/SectionController');
 const fillingController = require('./App/Controllers/FillingsController');
 const productTypeController = require("./App/Controllers/ProductTypeController");
+const imageController = require("./App/Controllers/ImageController");
+import fs from "fs";
 
 const port: string | number = process.env.SERVER_PORT || 3333;
+
+if(!fs.existsSync('./public/images/'))
+    fs.mkdirSync('./public/images', {recursive: true});
+
+app.get("/images", imageController.index);
+app.post("/images", imageController.upload.single('image'), imageController.create);
 
 app.get('/products', productsController.index);
 app.get('/products/show', productsController.show);
