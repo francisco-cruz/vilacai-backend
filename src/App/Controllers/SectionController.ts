@@ -9,6 +9,7 @@ import {
     sectionCreateSchema,
     sectionUpdateSchema,
 } from "../Validators/Section";
+const Utils = require("../Utils/Utils");
 
 const sectionRepository = dataSource.getRepository(Section);
 
@@ -123,6 +124,11 @@ class SectionController {
         if(validation.errors)
             return res.status(400).json(
                 new ErrorHandler(section, validation.errors).handle());
+
+        const sectionExist = await Utils.exists(Section, section.id);
+        if(!sectionExist)
+            return res.status(404).json(
+                new ErrorHandler(section, ['Section not found.']).handle());
 
         try{
             await sectionRepository
