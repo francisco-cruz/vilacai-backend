@@ -16,7 +16,8 @@ import {
 import {ErrorHandler} from '../Errors/ErrorHandler';
 import { Filling } from "../models/Filling";
 import { ProductType } from "../models/ProductType";
-const Utils = require("../../Database/Utils");
+const Utils = require("../Utils/Utils");
+import { Image } from "../models/Image";
 
 const productRepository = dataSource.getRepository(Product);
 
@@ -26,6 +27,7 @@ class ProductController {
         const products = await productRepository
             .createQueryBuilder("product")
             .leftJoinAndSelect("product.section", "section")
+            .leftJoinAndSelect("product.image", "image")
             .getMany();
 
         return res.json({
@@ -40,7 +42,8 @@ class ProductController {
             name: req.body.name,
             available: req.body.available,
             price: req.body.price,
-            qntdMaxFilling: req.body.qntdMaxFilling
+            qntdMaxFilling: req.body.qntdMaxFilling,
+            imageId: req.body.imageId
         };
 
         const validation = await productCreateSchema.validate(product)
@@ -51,16 +54,21 @@ class ProductController {
                 new ErrorHandler(product, validation.errors).handle());
 
         const sectionExist = await Utils.exists(Section, product.section);
-
         if(!sectionExist)
             return res.status(404).json(
                 new ErrorHandler(product, ["Section not found"]).handle());
+
+        const imageExist = await Utils.exists(Image, product.imageId);
+        if(!imageExist)
+            return res.status(404).json(
+                new ErrorHandler(product, ['Image not found.']).handle());
 
         try {
             const productToSave = new Product();
             productToSave.name = product.name;
             productToSave.available = true || product.available;
             productToSave.price = product.price;
+            productToSave.image = imageExist;
             productToSave.section = sectionExist;
             dataSource.manager.save(productToSave);
         } catch (err: any) {
@@ -96,6 +104,7 @@ class ProductController {
                 .leftJoinAndSelect("product.section", "section")
                 .leftJoinAndSelect("product.fillings", "fillings")
                 .leftJoinAndSelect("product.types", "types")
+                .leftJoinAndSelect("product.image", "image")
                 .where("product.id = :id", {id: product.id})
                 .getOne();
 
@@ -143,8 +152,9 @@ class ProductController {
             name: req.body.name,
             price: req.body.price,
             available: req.body.available,
-            qntdMaxFilling: req.body.qntdMaxFilling
-        }
+            qntdMaxFilling: req.body.qntdMaxFilling,
+            imageId: req.body.imageId
+        };
 
         const validation = await productUpdateSchema.validate(product)
             .catch(err => { return err; });
