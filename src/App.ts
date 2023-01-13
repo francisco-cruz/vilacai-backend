@@ -29,7 +29,7 @@ app.delete('/products/types', productsController.removeType);
 
 app.get('/sections', sectionController.index);
 app.post('/sections', sectionController.create);
-app.get('/sections/show', sectionController.show);
+app.get('/sections/show/:id', sectionController.show);
 app.delete('/sections', sectionController.remove);
 app.put('/sections', sectionController.update);
 
