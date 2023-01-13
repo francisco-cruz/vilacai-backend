@@ -27,7 +27,7 @@ class SectionController {
 
     async show(req:any, res:any): Promise<void> {
         const section: SectionBaseType = {
-            id: req.body.id
+            id: req.params.id
         };
 
         const validate = await sectionBaseSchema.validate(section)
