@@ -147,7 +147,7 @@ class ProductController {
 
     async update(req:any, res:any): Promise<any> {
         const product: ProductUpdateType = {
-            id: req.body.id,
+            id: req.params.id,
             section: req.body.section,
             name: req.body.name,
             price: req.body.price,
