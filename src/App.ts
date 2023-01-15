@@ -18,10 +18,10 @@ app.get("/images/show/:imageId", imageController.show);
 app.post("/images", imageController.upload.single('image'), imageController.create);
 
 app.get('/products', productsController.index);
-app.get('/products/show', productsController.show);
+app.get('/products/:id', productsController.show);
 app.post('/products', productsController.create);
-app.delete('/products', productsController.remove);
-app.put('/products', productsController.update);
+app.delete('/products/:id', productsController.remove);
+app.put('/products/:id', productsController.update);
 app.post('/products/fillings', productsController.addFilling);
 app.delete('/products/fillings', productsController.removeFilling);
 app.post('/products/types', productsController.addType);
@@ -29,20 +29,20 @@ app.delete('/products/types', productsController.removeType);
 
 app.get('/sections', sectionController.index);
 app.post('/sections', sectionController.create);
-app.get('/sections/show/:id', sectionController.show);
-app.delete('/sections', sectionController.remove);
-app.put('/sections', sectionController.update);
+app.get('/sections/:id', sectionController.show);
+app.delete('/sections/:id', sectionController.remove);
+app.put('/sections/:id', sectionController.update);
 
 app.get('/fillings', fillingController.index);
 app.post('/fillings', fillingController.create);
-app.get('/fillings/show', fillingController.show);
-app.put('/fillings', fillingController.update);
-app.delete('/fillings', fillingController.remove);
+app.get('/fillings/:id', fillingController.show);
+app.put('/fillings/:id', fillingController.update);
+app.delete('/fillings/:id', fillingController.remove);
 
 app.get('/productsTypes', productTypeController.index);
 app.post('/productsTypes', productTypeController.create);
-app.get("/productsTypes/show", productTypeController.show);
-app.delete("/productsTypes", productTypeController.remove);
+app.get("/productsTypes/:id", productTypeController.show);
+app.delete("/productsTypes/:id", productTypeController.remove);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
