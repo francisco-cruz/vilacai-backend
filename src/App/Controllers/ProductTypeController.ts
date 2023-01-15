@@ -80,7 +80,7 @@ class ProductTypeController {
 
     async remove(req:any,res:any): Promise<any> {
         const productTypeData: ProductTypeBaseType = {
-            id: req.body.id
+            id: req.params.id
         };
 
         const validation = await productTypeSchema.validate(productTypeData)
