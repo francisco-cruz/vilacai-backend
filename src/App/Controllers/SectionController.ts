@@ -115,7 +115,7 @@ class SectionController {
 
     async remove(req:any, res:any): Promise<void> {
         const section: SectionBaseType = {
-            id: req.body.id
+            id: req.params.id
         };
 
         const validation = await sectionBaseSchema.validate(section)
