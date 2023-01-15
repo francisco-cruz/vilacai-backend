@@ -83,7 +83,7 @@ class FillingsController {
 
     async remove(req:any,res:any): Promise<any> {
         const filling: FillingBaseType = {
-            id: req.body.id
+            id: req.params.id
         };
 
         const validation = await fillingBaseSchema.validate(filling)
