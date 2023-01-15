@@ -54,7 +54,7 @@ class ProductTypeController {
 
     async show(req:any,res:any): Promise<any> {
         const productType: ProductTypeBaseType = {
-            id: req.body.id
+            id: req.params.id
         };
 
         const validation = await productTypeSchema.validate(productType)
