@@ -84,7 +84,7 @@ class SectionController {
 
     async update(req:any, res:any): Promise<void> {
         const section: SectionUpdateType = {
-            id: req.body.id,
+            id: req.params.id,
             name: req.body.name
         };
 
