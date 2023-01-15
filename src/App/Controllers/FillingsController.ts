@@ -113,7 +113,7 @@ class FillingsController {
 
     async update(req:any,res:any): Promise<any>{
         const filling: FillingUpdateType = {
-            id: req.body.id,
+            id: req.params.id,
             name: req.body.name,
             available: req.body.available,
             price: req.body.price
