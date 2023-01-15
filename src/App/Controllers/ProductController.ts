@@ -126,6 +126,11 @@ class ProductController {
             return res.status(404).json(
                 new ErrorHandler(product, validation.errors).handle());
 
+        const productExists = await Utils.exists(Product, product.id);
+        if(!productExists)
+            return res.status(404).json(
+                new ErrorHandler(product, ['Product not found.']).handle());
+
         try{
             await productRepository
                 .createQueryBuilder('product')
